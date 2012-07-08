@@ -35,7 +35,7 @@ fi
 mkdir -p $DIR
 cd $DIR
 
-urls=$(curl "http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US" | grep -o 'url="[^"]*"' | sed -e 's/url="\([^"]*\)"/\1/' | sed -e "s/ /%20/g")
+urls=$(curl -s "http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US" | grep -o 'url="[^"]*"' | sed -e 's/url="\([^"]*\)"/\1/' | sed -e "s/ /%20/g")
 
 #read file line
 for line in $urls
@@ -44,6 +44,6 @@ do
     if [[ -f $fileName ]]; then
         if [ "$DEBUG" ]; then echo "$fileName already exists"; fi
     else
-        curl -O $line;
+        curl -s $line -o $fileName;
     fi
 done
