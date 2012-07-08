@@ -1,17 +1,49 @@
 #!/usr/bin/env bash
+while :
+do
+	#Process args
+	case "$1" in 
+	-d | --debug)
+		DEBUG=debug #on
+		shift
+		;;
+	--dir)
+		DIR=$2
+		echo "Directory set to $DIR"
+		shift 2
+		;;
+	--) # End of all options
+		shift
+		break
+		;;
+	-*)
+		echo "Error: unknown option: $1" >&2
+		exit 1
+		;;
+	*) #No more options
+		break
+		;;
+	esac		
+done
 
-mkdir -p ~/Pictures/bing-wallpapers/
-cd ~/Pictures/bing-wallpapers/
+if [[ -z $DIR ]]
+then
+	if [ "$DEBUG" ]; then echo "Setting default directory..."; fi
+	DIR="$HOME/Pictures/bing-wallpapers"
+fi
 
-curl "http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US" | grep -o 'url="[^"]*"' | sed -e 's/url="\([^"]*\)"/\1/' | sed -e "s/ /%20/g" > tmp.txt
+mkdir -p $DIR
+cd $DIR
+
+urls=$(curl "http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US" | grep -o 'url="[^"]*"' | sed -e 's/url="\([^"]*\)"/\1/' | sed -e "s/ /%20/g")
 
 #read file line
-while read line
+for line in $urls
 do
-    fileName=$(echo $line | sed -e "s;.*/\([^\/]*\)$;\1;")
+    fileName=$(echo $line | sed -e "s;.*/\([^\/]*\)$;\1;" | sed -e "s/%/_/g")
     if [[ -f $fileName ]]; then
-        echo "$fileName already exists" > log.txt
+        if [ "$DEBUG" ]; then echo "$fileName already exists"; fi
     else
         curl -O $line;
     fi
-done < "tmp.txt"
+done
