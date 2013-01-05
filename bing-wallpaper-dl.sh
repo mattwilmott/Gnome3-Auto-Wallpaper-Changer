@@ -35,15 +35,37 @@ fi
 mkdir -p $DIR
 cd $DIR
 
-urls=$(curl -s "http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US" | grep -o 'url="[^"]*"' | sed -e 's/url="\([^"]*\)"/\1/' | sed -e "s/ /%20/g")
 
-#read file line
-for line in $urls
+# Search through the following URLs for images
+bingUrls=(
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-au'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-gb'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-jp' )
+
+ #http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US #appears broken
+
+for url in ${bingUrls[@]}
 do
-    fileName=$(echo $line | sed -e "s;.*/\([^\/]*\)$;\1;" | sed -e "s/%/_/g")
-    if [[ -f $fileName ]]; then
-        if [ "$DEBUG" ]; then echo "$fileName already exists"; fi
-    else
-        curl -s $line -o $fileName;
-    fi
+	echo "Fetching Bing Url $url"
+	echo
+	temp=$(curl -s "$url" | xmlstarlet sel -t -m 'images/image/url' -v . -n)
+	for i in $temp; do echo "Current image url: $i"; urls+=($i); done
+	echo "urls now contains ${#urls[@]} elements"
+	echo "Finished fetching $url"
 done
+if [[ "$DEBUG" ]]; then echo "Fetched XML docs, retrieving images"; fi
+#read file line
+for line in ${urls[@]}
+do
+	if [[ "$DEBUG" ]]; then echo "Current url:$line"; fi
+	# Convert hprichbg?p=rb%2fArafuneCoast_JA-JP1084689430.jpg to ArafuneCoast.jpg for instance
+	fileName="$(echo $line | cut -f2 -d'%' | cut -f1 -d'_' | sed 's/2f//').jpg"
+	if [[ "$DEBUG" ]]; then echo "filename determined as $fileName"; fi
+	if [[ -f $fileName ]]; then
+	    if [ "$DEBUG" ]; then echo "$fileName already exists"; fi
+	else
+	    if [[ "$DEBUG" ]]; then echo "Fetching image, $line"; fi
+	    curl -s http://www.bing.com/$line -o "$fileName";
+	fi
+done
+echo "Finished"
