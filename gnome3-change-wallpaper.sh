@@ -6,23 +6,13 @@
 sessionfile=`find "${HOME}/.dbus/session-bus/" -type f`
 export `grep "DBUS_SESSION_BUS_ADDRESS" "${sessionfile}" | sed '/^#/d'`
 
-
 i=0
-
 DIR="/home/matt/Pictures/bing-wallpapers"
-TMP="tmp_$RANDOM.txt"
 
-ls $DIR | grep -i jpg > $TMP
-
-while read LINE 
-do
-	IMAGE[$i]=$LINE
-	#echo "Current image ${IMAGE[$i]}"
-	i=`expr $i + 1`
-done < $TMP
-#echo "Num of Pictures: $i"
-
+filelist=()
+while read -d $'\0' -r ; do filelist+=("$REPLY"); done < <(find $DIR -type f -iname "*.jpg" -print0)
 NUMBER=0   #initialize
+i=${#filelist[@]}
 if [ $i -ne 0 ]
 then
 	# Generate random number
@@ -31,9 +21,8 @@ then
 fi
 
 
-PIC=${IMAGE[$NUMBER]}
+PIC=${filelist[$NUMBER]}
 #/usr/bin/gsettings set org.gnome.desktop.background picture-uri "file://$DIR/$PIC"
 #echo "Setting PIC to $PIC"
-dconf write /org/gnome/desktop/background/picture-uri "'file://$DIR/$PIC'"
+dconf write /org/gnome/desktop/background/picture-uri "'file://$PIC'"
 #echo "Image is $DIR/$PIC"
-rm -f $TMP

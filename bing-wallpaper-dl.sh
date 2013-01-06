@@ -38,10 +38,10 @@ cd $DIR
 
 # Search through the following URLs for images
 bingUrls=(
- 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-US'
- 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-au'
- 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-gb'
- 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-jp')
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=24&n=8&mkt=en-US'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=16&n=8&mkt=en-US'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=8&n=8&mkt=en-US'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-US')
 
 
 for url in ${bingUrls[@]}
