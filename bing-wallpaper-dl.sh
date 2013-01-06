@@ -37,25 +37,23 @@ cd $DIR
 
 
 # Search through the following URLs for images
-#bingUrls=(
-# 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-au'
-# 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-gb'
-# 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-jp' )
-
- #http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US
- #http://themeserver.microsoft.com/default.aspx?p=Bing&c=Desktop&m=en-US #appears broken
-#bingUrls=('http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=5&mkt=en-US')
-bingUrls=('http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=25&mkt=en-US')
+bingUrls=(
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-US'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-au'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-gb'
+ 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-jp')
 
 
 for url in ${bingUrls[@]}
 do
-	echo "Fetching Bing Url $url"
-	echo
+	if [[ "$DEBUG" ]]; then echo "Fetching Bing Url $url"; echo; fi
 	temp=$(curl -s "$url" | xmlstarlet sel -t -m 'images/image/urlBase' -v '.' -n)
-	for i in $temp; do echo "Current image url: $i"; urls+=($i); done
-	echo "urls now contains ${#urls[@]} elements"
-	echo "Finished fetching $url"
+	for i in $temp; do 
+		if [[ "$DEBUG" ]]; then echo "Current image url: $i"; fi
+		urls+=($i); 
+	done
+	if [[ "$DEBUG" ]]; then echo "urls now contains ${#urls[@]} elements"; fi
+	if [[ "$DEBUG" ]]; then echo "Finished fetching $url"; fi
 done
 if [[ "$DEBUG" ]]; then echo "Fetched XML docs, retrieving images"; fi
 #read file line
@@ -69,7 +67,8 @@ do
 	    if [ "$DEBUG" ]; then echo "$fileName already exists"; fi
 	else
 	    if [[ "$DEBUG" ]]; then echo "Fetching image, "$line"_1920x1200.jpg"; fi
-	    curl -s "http://www.bing.com/"$line"_1920x1200.jpg" -o "$fileName";
+		curl -s "http://www.bing.com/"$line"_1920x1200.jpg" -o "$fileName";
+		grep -q -i 'html' $fileName && rm -f $fileName 
 	fi
 done
-echo "Finished"
+if [[ "$DEBUG" ]]; then echo "Finished"; fi
