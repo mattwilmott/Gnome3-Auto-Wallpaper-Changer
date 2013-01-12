@@ -61,7 +61,7 @@ for line in ${urls[@]}
 do
 	if [[ "$DEBUG" ]]; then echo "Current url:$line"; fi
 	# Convert hprichbg?p=rb%2fArafuneCoast_JA-JP1084689430 to ArafuneCoast.jpg for instance
-	fileName="$(echo $line | cut -f2 -d'%' | cut -f1 -d'_' | sed 's/2f//')_1920x1200.jpg"
+	fileName="$(echo $line | cut -f2 -d'%' | cut -f1 -d'_' | sed 's/2f//' | cut -f5 -d'/' )_1920x1200.jpg"
 	if [[ "$DEBUG" ]]; then echo "filename determined as $fileName"; fi
 	if [[ -f $fileName ]]; then
 	    if [ "$DEBUG" ]; then echo "$fileName already exists"; fi
