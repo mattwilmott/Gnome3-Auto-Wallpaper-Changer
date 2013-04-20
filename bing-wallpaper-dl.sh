@@ -38,7 +38,6 @@ cd $DIR
 
 # Search through the following URLs for images
 bingUrls=(
- 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=24&n=8&mkt=en-US'
  'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=16&n=8&mkt=en-US'
  'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=8&n=8&mkt=en-US'
  'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=8&mkt=en-US')
@@ -47,7 +46,12 @@ bingUrls=(
 for url in ${bingUrls[@]}
 do
 	if [[ "$DEBUG" ]]; then echo "Fetching Bing Url $url"; echo; fi
-	temp=$(curl -s "$url" | xmlstarlet sel -t -m 'images/image/urlBase' -v '.' -n)
+	temp=$(curl -s "$url" | xmlstarlet sel -t -m 'images/image/urlBase' -v '.' -n 2> /dev/null)
+  if [[ "$?" -ne 0 ]]
+  then
+      echo "Skipping, bad data"
+      continue
+  fi
 	for i in $temp; do 
 		if [[ "$DEBUG" ]]; then echo "Current image url: $i"; fi
 		urls+=($i); 

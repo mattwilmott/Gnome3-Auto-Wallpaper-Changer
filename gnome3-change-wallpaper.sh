@@ -3,8 +3,11 @@
 #Initialize the DBUS ENV
 #export DBUS_SESSION=$(grep -v "^#" /home/matt/.dbus/session-bus/`cat /var/lib/dbus/machine-id`-0)
 
-sessionfile=`find "${HOME}/.dbus/session-bus/" -type f`
-export `grep "DBUS_SESSION_BUS_ADDRESS" "${sessionfile}" | sed '/^#/d'`
+machine_id=$(cat /var/lib/dbus/machine-id)
+echo $machine_id
+bus_addresses=$(grep -h DBUS_SESSION_BUS_ADDRESS ${HOME}/.dbus/session-bus/${machine_id}* | sed '/^#/d')
+echo $bus_addresses
+#export ${bus_address} > /dev/null
 
 i=0
 DIR="/home/matt/Pictures/bing-wallpapers"
@@ -22,7 +25,15 @@ fi
 
 
 PIC=${filelist[$NUMBER]}
+
+
 #/usr/bin/gsettings set org.gnome.desktop.background picture-uri "file://$DIR/$PIC"
 #echo "Setting PIC to $PIC"
-dconf write /org/gnome/desktop/background/picture-uri "'file://$PIC'"
+for session in ${bus_addresses[@]}
+do
+  echo "Exporting and setting background..."
+  echo $session
+  export $session
+  dconf write /org/gnome/desktop/background/picture-uri "'file://$PIC'"
+done
 #echo "Image is $DIR/$PIC"
