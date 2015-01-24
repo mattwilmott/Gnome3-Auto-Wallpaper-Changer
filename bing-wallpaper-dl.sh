@@ -49,7 +49,6 @@ do
 	temp=$(curl -s "$url" | xmlstarlet sel -t -m 'images/image/urlBase' -v '.' -n 2> /dev/null)
   if [[ "$?" -ne 0 ]]
   then
-      echo "Skipping, bad data"
       continue
   fi
 	for i in $temp; do 
