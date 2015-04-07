@@ -10,7 +10,7 @@ echo $bus_addresses
 #export ${bus_address} > /dev/null
 
 i=0
-DIR="/home/matt/Pictures/bing-wallpapers"
+DIR="/home/mwilmott/Pictures/bing-wallpapers"
 
 filelist=()
 while read -d $'\0' -r ; do filelist+=("$REPLY"); done < <(find $DIR -type f -iname "*.jpg" -print0)
@@ -19,8 +19,9 @@ i=${#filelist[@]}
 if [ $i -ne 0 ]
 then
 	# Generate random number
-	NUMBER=$RANDOM
-	let "NUMBER %= $i"  # Scales $number down within 0-$i.
+	#NUMBER=$RANDOM
+	#let "NUMBER %= $i"  # Scales $number down within 0-$i.
+	let NUMBER=`shuf -i 0-$i -n 1`
 fi
 
 
@@ -37,3 +38,4 @@ do
   dconf write /org/gnome/desktop/background/picture-uri "'file://$PIC'"
 done
 #echo "Image is $DIR/$PIC"
+echo $PIC > /tmp/wallpaper

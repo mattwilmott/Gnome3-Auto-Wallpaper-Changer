@@ -49,6 +49,7 @@ do
 	temp=$(curl -s "$url" | xmlstarlet sel -t -m 'images/image/urlBase' -v '.' -n 2> /dev/null)
   if [[ "$?" -ne 0 ]]
   then
+	echo "Curl failed, skipping"
       continue
   fi
 	for i in $temp; do 
@@ -60,6 +61,7 @@ do
 done
 if [[ "$DEBUG" ]]; then echo "Fetched XML docs, retrieving images"; fi
 #read file line
+if [[ "$DEBUG" ]]; then echo "Number of images: ${#urls[@]}"; fi
 for line in ${urls[@]}
 do
 	if [[ "$DEBUG" ]]; then echo "Current url:$line"; fi
