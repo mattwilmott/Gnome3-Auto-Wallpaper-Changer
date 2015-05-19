@@ -13,7 +13,7 @@ i=0
 DIR="/home/mwilmott/Pictures/bing-wallpapers"
 
 filelist=()
-while read -d $'\0' -r ; do filelist+=("$REPLY"); done < <(find $DIR -type f -iname "*.jpg" -print0)
+while read -d $'\0' -r ; do filelist+=("$REPLY"); done < <(find $DIR -type f -iname "*.jpg" -print0 | sort --zero-terminated --random-sort)
 NUMBER=0   #initialize
 i=${#filelist[@]}
 if [ $i -ne 0 ]
@@ -22,7 +22,10 @@ then
 	#NUMBER=$RANDOM
 	#let "NUMBER %= $i"  # Scales $number down within 0-$i.
 	let NUMBER=`shuf -i 0-$i -n 1`
+else
+	exit 0
 fi
+
 
 
 PIC=${filelist[$NUMBER]}
